@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, ChangeEvent } from 'react';
-import './displayDropdown.css'
+import './displayDropdown.css';
 import { LuSettings2 } from "react-icons/lu";
 import { BiChevronDown } from "react-icons/bi";
-
 
 function DisplayDropdown({ grouping, setGrouping, ordering, setOrdering }: { grouping: string, setGrouping: (grouping: string) => void, ordering: string, setOrdering: (ordering: string) => void }) {
   const [visible, setVisible] = useState(false);
@@ -10,16 +9,21 @@ function DisplayDropdown({ grouping, setGrouping, ordering, setOrdering }: { gro
 
   const openDropdown = useCallback(() => {
     setVisible(true);
-  }, [],);
+  }, []);
 
-  const handleClickOutside = useCallback((event: any) => {
-    if (componentRef.current && !componentRef.current.contains(event.target)) {
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (componentRef.current && !componentRef.current.contains(event.target as Node)) {
       setVisible(false);
     }
   }, []);
 
-  const onGroupingChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => setGrouping(e.target.value), []);
-  const onOrderingChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => setOrdering(e.target.value), []);
+  const onGroupingChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    setGrouping(e.target.value);
+  }, [setGrouping]);
+
+  const onOrderingChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    setOrdering(e.target.value);
+  }, [setOrdering]);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
@@ -27,7 +31,7 @@ function DisplayDropdown({ grouping, setGrouping, ordering, setOrdering }: { gro
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
-  });
+  }, [handleClickOutside]); // Added handleClickOutside as a dependency
 
   return (
     <div className='display-dropdown' ref={componentRef}>
@@ -36,7 +40,7 @@ function DisplayDropdown({ grouping, setGrouping, ordering, setOrdering }: { gro
         <div className='dropdown-label'>Display</div>
         <BiChevronDown color='#6b6f76' />
       </div>
-      <div className={`dropdown-content-container ${visible && "visible"}`}>
+      <div className={`dropdown-content-container ${visible ? "visible" : ""}`}>
         <div className='dropdown-content-row'>
           <div className='dropdown-content-label'>Grouping</div>
           <select name="grouping" id="grouping" value={grouping} onChange={onGroupingChange}>
